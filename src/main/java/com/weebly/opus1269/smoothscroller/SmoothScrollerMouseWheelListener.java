@@ -27,8 +27,11 @@ package com.weebly.opus1269.smoothscroller;
 import com.intellij.openapi.editor.ScrollingModel;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.TextEditor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
@@ -36,9 +39,30 @@ import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 
 class SmoothScrollerMouseWheelListener implements MouseWheelListener, ActionListener {
+    private static Logger LOGGER =  LoggerFactory.getLogger(SmoothScrollerMouseWheelListener.class);
+
     // The frame rate of the animation
     // TODO: Investigate if we can get an AnimationFrame
-    private static final int FRAMES_PER_SECOND = 20;
+    private static final int FRAMES_PER_SECOND;
+
+    static {
+        GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] screenDevices = graphicsEnvironment.getScreenDevices();
+
+        int highest = 0;
+        for (GraphicsDevice graphicsDevice : screenDevices) {
+            DisplayMode displayMode = graphicsDevice.getDisplayMode();
+            int refreshRate = displayMode.getRefreshRate();
+
+            if (refreshRate > highest) {
+                highest = refreshRate;
+            }
+        }
+
+        FRAMES_PER_SECOND = highest;
+        LOGGER.debug(String.format("Set scrolling to %d FPS", FRAMES_PER_SECOND));
+    }
+
     private static final int MILLIS_PER_FRAME = 1000 / FRAMES_PER_SECOND;
 
     // Scrolling model of the window
