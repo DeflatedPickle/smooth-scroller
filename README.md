@@ -8,7 +8,7 @@ and Android Studio. Hopefully, it will work on any IntelliJ product.
 
 There are several options available under Tools -> Smooth Scroller Options...
 
-![options image](./resources/options.png)
+![options image](.github/options.png)
 
 Between these and the touchpad/mouse settings on your hardware, you should be able to get good performance.
 
