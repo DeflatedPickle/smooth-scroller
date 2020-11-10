@@ -1,5 +1,6 @@
 The MIT License (MIT)
 
+Copyright (c) 2020 DeflatedPickle
 Copyright (c) 2016 Michael A Updike
 Copyright (c) 2013 Hugo Campos
 

@@ -24,10 +24,10 @@
   -->
 
 <idea-plugin version="2">
-    <id>com.weebly.opus1269.smoothscroller</id>
+    <id>com.deflatedpickle.smoothscroller</id>
     <name>Smooth Scroller</name>
-    <version>1.3.0</version>
-    <vendor email="igreilly1269@gmail.com" url="https://github.com/opus1269">Mike Updike</vendor>
+    <version>1.3.2</version>
+    <vendor url="https://github.com/DeflatedPickle">DeflatedPickle</vendor>
 
     <description><![CDATA[
     This plugin provides smooth and inertial scrolling to all text editors. It provides acceleration effects
@@ -38,6 +38,8 @@
     ]]></description>
 
     <change-notes><![CDATA[
+      Version 1.3.2 - Increased the frame rate and fixed horizontal scrolling
+      <br /> <br />
       Version 1.3.0 - Add Scroll Multiplier setting to the options
       <br /> <br />
       Version 1.2.0 - Support all editors of class TextEditor
