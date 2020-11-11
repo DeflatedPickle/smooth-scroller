@@ -23,11 +23,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.weebly.opus1269.smoothscroller;
+package com.weebly.opus1269.smoothscroller.editor.listener;
 
 import com.intellij.openapi.editor.ScrollingModel;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.TextEditor;
+import com.weebly.opus1269.smoothscroller.property.Props;
+import com.weebly.opus1269.smoothscroller.property.SmoothScrollerProperties;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

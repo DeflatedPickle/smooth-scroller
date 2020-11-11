@@ -23,18 +23,20 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.weebly.opus1269.smoothscroller;
+package com.weebly.opus1269.smoothscroller.property;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Action to allow users to modify the scroll settings
- */
-public class OptionsAction extends AnAction {
+public enum SmoothScrollerProperties {
+    THRESHOLD,
+    SPEED_LIMIT,
+    ACCELERATION_LIMIT,
+    FRICTION,
+    MULTIPLIER;
+
+    @NotNull
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        new OptionsDialog().show();
+    public String toString() {
+        return String.format("%s.%s", this.getClass().getSimpleName(), super.toString());
     }
 }

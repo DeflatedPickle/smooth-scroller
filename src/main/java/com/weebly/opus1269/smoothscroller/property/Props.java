@@ -23,7 +23,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.weebly.opus1269.smoothscroller;
+package com.weebly.opus1269.smoothscroller.property;
 
 import com.intellij.ide.util.PropertiesComponent;
 import org.jetbrains.annotations.NotNull;

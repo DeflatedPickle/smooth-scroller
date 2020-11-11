@@ -23,8 +23,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.weebly.opus1269.smoothscroller;
+package com.weebly.opus1269.smoothscroller.editor.form;
 
+import com.weebly.opus1269.smoothscroller.property.Prop;
+import com.weebly.opus1269.smoothscroller.property.Props;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

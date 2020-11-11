@@ -23,42 +23,41 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.weebly.opus1269.smoothscroller;
+package com.weebly.opus1269.smoothscroller.intellij;
 
-import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.fileEditor.FileEditorManagerListener;
+import com.intellij.openapi.project.Project;
+import com.weebly.opus1269.smoothscroller.editor.listener.FileEditorListener;
+import com.weebly.opus1269.smoothscroller.property.Props;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+/**
+ * Top level component for the plugin
+ */
+public class SmoothScrollerPlugin implements ProjectComponent {
+    private final Project mProject;
 
+    public SmoothScrollerPlugin(Project project) {
+        this.mProject = project;
 
-public class OptionsDialog extends DialogWrapper {
-    private final OptionsForm mOptionsForm;
-
-    public OptionsDialog() {
-        super(null);
-
-        this.mOptionsForm = new OptionsForm();
-
-        init();
-
-        setTitle("Smooth Scroller Options");
+        // Initialize scroll parameters
+        Props.initialize();
     }
 
     @Override
-    public void show() {
-        this.mOptionsForm.setFromProps();
-
-        super.show();
-
-        if (getExitCode() == DialogWrapper.OK_EXIT_CODE && this.mOptionsForm.isModified()) {
-            this.mOptionsForm.setToProps();
-            Props.storeProperties();
-        }
+    public void initComponent() {
+        this.mProject.getMessageBus()
+                .connect()
+                .subscribe(
+                        FileEditorManagerListener.FILE_EDITOR_MANAGER,
+                        new FileEditorListener()
+                );
     }
 
     @NotNull
     @Override
-    protected JComponent createCenterPanel() {
-        return this.mOptionsForm.getRoot();
+    public String getComponentName() {
+        return "SmoothScrollerProjectComponent";
     }
 }

@@ -23,20 +23,44 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.weebly.opus1269.smoothscroller;
+package com.weebly.opus1269.smoothscroller.editor.dialog;
 
+import com.intellij.openapi.ui.DialogWrapper;
+import com.weebly.opus1269.smoothscroller.editor.form.OptionsForm;
+import com.weebly.opus1269.smoothscroller.property.Props;
 import org.jetbrains.annotations.NotNull;
 
-public enum SmoothScrollerProperties {
-    THRESHOLD,
-    SPEED_LIMIT,
-    ACCELERATION_LIMIT,
-    FRICTION,
-    MULTIPLIER;
+import javax.swing.*;
+
+
+public class OptionsDialog extends DialogWrapper {
+    private final OptionsForm mOptionsForm;
+
+    public OptionsDialog() {
+        super(null);
+
+        this.mOptionsForm = new OptionsForm();
+
+        init();
+
+        setTitle("Smooth Scroller Options");
+    }
+
+    @Override
+    public void show() {
+        this.mOptionsForm.setFromProps();
+
+        super.show();
+
+        if (getExitCode() == DialogWrapper.OK_EXIT_CODE && this.mOptionsForm.isModified()) {
+            this.mOptionsForm.setToProps();
+            Props.storeProperties();
+        }
+    }
 
     @NotNull
     @Override
-    public String toString() {
-        return String.format("%s.%s", this.getClass().getSimpleName(), super.toString());
+    protected JComponent createCenterPanel() {
+        return this.mOptionsForm.getRoot();
     }
 }

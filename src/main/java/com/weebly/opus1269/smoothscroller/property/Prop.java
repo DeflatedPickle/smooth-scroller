@@ -23,39 +23,57 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.weebly.opus1269.smoothscroller;
+package com.weebly.opus1269.smoothscroller.property;
 
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.fileEditor.FileEditorManagerListener;
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Top level component for the plugin
+ * Represents a float value that is common to all editors and
+ * is persisted to the GUI
  */
-public class SmoothScrollerPlugin implements ProjectComponent {
-    private final Project mProject;
+public class Prop {
+    public final SmoothScrollerProperties property;
+    /**
+     * The default value of this property
+     */
+    public final float def;
+    /**
+     * The maximum value of this property
+     */
+    private final float max;
+    /**
+     * The current value of this property
+     */
+    private float val;
+    private int pos;
 
-    public SmoothScrollerPlugin(Project project) {
-        this.mProject = project;
-
-        // Initialize scroll parameters
-        Props.initialize();
+    public Prop(
+            @NotNull SmoothScrollerProperties property,
+            float def,
+            float max
+    ) {
+        this.property = property;
+        this.def = def;
+        this.max = max;
+        this.val = def;
+        this.pos = Math.round(100.0F * this.val / this.max);
     }
 
-    @Override
-    public void initComponent() {
-        this.mProject.getMessageBus()
-                .connect()
-                .subscribe(
-                        FileEditorManagerListener.FILE_EDITOR_MANAGER,
-                        new FileEditorListener()
-                );
+    public float getVal() {
+        return val;
     }
 
-    @NotNull
-    @Override
-    public String getComponentName() {
-        return "SmoothScrollerProjectComponent";
+    public void setVal(float val) {
+        this.val = val;
+        this.pos = Math.round(100.0F * this.val / this.max);
+    }
+
+    public int getPos() {
+        return pos;
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
+        this.val = this.max * this.pos / 100.0F;
     }
 }

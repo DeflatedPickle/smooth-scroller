@@ -19,5 +19,7 @@ dependencies {
 }
 
 intellij {
+    updateSinceUntilBuild = false
+    sameSinceUntilBuild = true
     version '2019.1'
 }

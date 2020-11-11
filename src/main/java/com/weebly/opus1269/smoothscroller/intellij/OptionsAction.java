@@ -23,57 +23,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.weebly.opus1269.smoothscroller;
+package com.weebly.opus1269.smoothscroller.intellij;
 
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.weebly.opus1269.smoothscroller.editor.dialog.OptionsDialog;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a float value that is common to all editors and
- * is persisted to the GUI
+ * Action to allow users to modify the scroll settings
  */
-public class Prop {
-    public final SmoothScrollerProperties property;
-    /**
-     * The default value of this property
-     */
-    public final float def;
-    /**
-     * The maximum value of this property
-     */
-    private final float max;
-    /**
-     * The current value of this property
-     */
-    private float val;
-    private int pos;
-
-    public Prop(
-            @NotNull SmoothScrollerProperties property,
-            float def,
-            float max
-    ) {
-        this.property = property;
-        this.def = def;
-        this.max = max;
-        this.val = def;
-        this.pos = Math.round(100.0F * this.val / this.max);
-    }
-
-    public float getVal() {
-        return val;
-    }
-
-    public void setVal(float val) {
-        this.val = val;
-        this.pos = Math.round(100.0F * this.val / this.max);
-    }
-
-    public int getPos() {
-        return pos;
-    }
-
-    public void setPos(int pos) {
-        this.pos = pos;
-        this.val = this.max * this.pos / 100.0F;
+public class OptionsAction extends AnAction {
+    @Override
+    public void actionPerformed(@NotNull AnActionEvent e) {
+        new OptionsDialog().show();
     }
 }
