@@ -21,7 +21,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Movement Threshold"/>
+              <text value="Movement Threshold:"/>
               <toolTipText value="Threshold below which the scrollbar is stopped"/>
             </properties>
           </component>
@@ -95,7 +95,7 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Speed Limit"/>
+              <text value="Speed Limit:"/>
               <toolTipText value="Maximum scrolling speed"/>
               <visible value="true"/>
             </properties>
@@ -105,7 +105,7 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Acceleration Limit"/>
+              <text value="Acceleration Limit:"/>
               <toolTipText value="Maximum scrolling acceleration"/>
             </properties>
           </component>
@@ -114,7 +114,7 @@
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Friction Factor"/>
+              <text value="Friction Factor:"/>
               <toolTipText value="Speed reduction factor during kinetic scrolling"/>
             </properties>
           </component>
@@ -123,7 +123,7 @@
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Scroll Multiplier"/>
+              <text value="Scroll Multiplier:"/>
               <toolTipText value="Multiplier for scroll movement"/>
             </properties>
           </component>

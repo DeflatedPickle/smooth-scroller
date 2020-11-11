@@ -1,6 +1,7 @@
 /*
  * The MIT License (MIT)
  *
+ * Copyright (c) 2020 DeflatedPickle
  * Copyright (c) 2016 Michael A Updike
  * Copyright (c) 2013 Hugo Campos
  *
@@ -24,34 +25,55 @@
 
 package com.weebly.opus1269.smoothscroller;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Represents a float value that is common to all editors and
  * is persisted to the GUI
  */
 public class Prop {
+    public final SmoothScrollerProperties property;
+    /**
+     * The default value of this property
+     */
+    public final float def;
+    /**
+     * The maximum value of this property
+     */
+    private final float max;
+    /**
+     * The current value of this property
+     */
+    private float val;
+    private int pos;
 
-    public final String NAME;
-    public final float DEF;
-    private final float MAX;
-    public float VAL;
-    public int POS;
+    public Prop(
+            @NotNull SmoothScrollerProperties property,
+            float def,
+            float max
+    ) {
+        this.property = property;
+        this.def = def;
+        this.max = max;
+        this.val = def;
+        this.pos = Math.round(100.0F * this.val / this.max);
+    }
 
-
-    public Prop(String name, float def, float max) {
-        NAME = name;
-        DEF = def;
-        MAX = max;
-        VAL = def;
-        POS = Math.round(100.0F * VAL / MAX);
+    public float getVal() {
+        return val;
     }
 
     public void setVal(float val) {
-        VAL = val;
-        POS = Math.round(100.0F * VAL / MAX);
+        this.val = val;
+        this.pos = Math.round(100.0F * this.val / this.max);
+    }
+
+    public int getPos() {
+        return pos;
     }
 
     public void setPos(int pos) {
-        POS = pos;
-        VAL = MAX * POS / 100.0F;
+        this.pos = pos;
+        this.val = this.max * this.pos / 100.0F;
     }
 }

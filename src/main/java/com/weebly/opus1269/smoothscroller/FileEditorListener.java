@@ -1,7 +1,7 @@
-
 /*
  * The MIT License (MIT)
  *
+ * Copyright (c) 2020 DeflatedPickle
  * Copyright (c) 2016 Michael A Updike
  * Copyright (c) 2013 Hugo Campos
  *
@@ -26,7 +26,11 @@
 package com.weebly.opus1269.smoothscroller;
 
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.*;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
+import com.intellij.openapi.fileEditor.FileEditorManagerListener;
+import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,26 +40,20 @@ import java.util.Map;
 import java.util.Set;
 
 public class FileEditorListener implements FileEditorManagerListener {
-    private final Map<FileEditor, SmoothScrollerMouseWheelListener> mListeners = new HashMap<FileEditor, SmoothScrollerMouseWheelListener>();
-
-    @Override
-    public void fileOpened(@NotNull FileEditorManager fileEditorManager, @NotNull VirtualFile virtualFile) {
-    }
+    private final Map<FileEditor, SmoothScrollerMouseWheelListener> mListeners = new HashMap<>();
 
     @Override
     public void fileClosed(@NotNull FileEditorManager fileEditorManager, @NotNull VirtualFile virtualFile) {
-        Set<FileEditor> destroyedEditors = new HashSet<FileEditor>(mListeners.keySet());
+        Set<FileEditor> destroyedEditors = new HashSet<>(this.mListeners.keySet());
 
         // Remove all the editors that are still active from the set of destroyed editors.
         for (FileEditor editor : fileEditorManager.getAllEditors()) {
-            if (destroyedEditors.contains(editor)) {
-                destroyedEditors.remove(editor);
-            }
+            destroyedEditors.remove(editor);
         }
 
         // Remove the wheel listener from all the destroyed editors.
         for (FileEditor fileEditor : destroyedEditors) {
-            SmoothScrollerMouseWheelListener listener = mListeners.get(fileEditor);
+            SmoothScrollerMouseWheelListener listener = this.mListeners.get(fileEditor);
 
             if (listener != null) {
                 listener.stopAnimating();
@@ -72,21 +70,21 @@ public class FileEditorListener implements FileEditorManagerListener {
         FileEditor newEditor = fileEditorManagerEvent.getNewEditor();
 
         // stop animating old editor
-        SmoothScrollerMouseWheelListener listener = mListeners.get(oldEditor);
+        SmoothScrollerMouseWheelListener listener = this.mListeners.get(oldEditor);
         if (listener != null) {
             listener.stopAnimating();
         }
 
         // start animating new editor, creating listener if needed
         if (newEditor instanceof TextEditor) {
-            listener = mListeners.get(newEditor);
-            if (listener == null) {
-                listener = new SmoothScrollerMouseWheelListener(newEditor);
-                mListeners.put(newEditor, listener);
+            listener = mListeners.computeIfAbsent(
+                    newEditor,
+                    fileEditor ->
+                            new SmoothScrollerMouseWheelListener(newEditor)
+            );
 
-                Editor editor = ((TextEditor) newEditor).getEditor();
-                editor.getContentComponent().addMouseWheelListener(listener);
-            }
+            Editor editor = ((TextEditor) newEditor).getEditor();
+            editor.getContentComponent().addMouseWheelListener(listener);
 
             listener.startAnimating();
         }

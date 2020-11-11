@@ -1,6 +1,7 @@
 /*
  * The MIT License (MIT)
  *
+ * Copyright (c) 2020 DeflatedPickle
  * Copyright (c) 2016 Michael A Updike
  * Copyright (c) 2013 Hugo Campos
  *
@@ -25,6 +26,7 @@
 package com.weebly.opus1269.smoothscroller;
 
 import com.intellij.ide.util.PropertiesComponent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -32,31 +34,26 @@ import java.util.ArrayList;
  * Represents all the properties that are common to all editors
  */
 public class Props {
+    private static final ArrayList<Prop> sProps = new ArrayList<>();
 
-    public static final int TOL = 0;
-    public static final int SPD = 1;
-    public static final int ACC = 2;
-    public static final int FRIC = 3;
-    public static final int MULT = 4;
+    private Props() {
+    }
 
-
-    private static final ArrayList<Prop> sProps = new ArrayList<Prop>();
-
-     /**
+    /**
      * Create the properties and load their current values from the IDE
      */
     public static void initialize() {
-        // create the Prop objects
-        sProps.add(new Prop("SmoothScrollerThreshold", 0.0005F, 0.001F));
-        sProps.add(new Prop("SmoothScrollerSpeedLmt", 25.0F, 100.0F));
-        sProps.add(new Prop("SmoothScrollerAccLmt", 5.0F, 10.0F));
-        sProps.add(new Prop("SmoothScrollerFric", 0.005F, .015F));
-        sProps.add(new Prop("SmoothScrollerMult", 1.0F, 100.0F));
+        // Create the Prop objects
+        sProps.add(new Prop(SmoothScrollerProperties.THRESHOLD, 0.0005F, 0.001F));
+        sProps.add(new Prop(SmoothScrollerProperties.SPEED_LIMIT, 25.0F, 100.0F));
+        sProps.add(new Prop(SmoothScrollerProperties.ACCELERATION_LIMIT, 5.0F, 10.0F));
+        sProps.add(new Prop(SmoothScrollerProperties.FRICTION, 0.005F, .015F));
+        sProps.add(new Prop(SmoothScrollerProperties.MULTIPLIER, 1.0F, 100.0F));
 
-        // load the current values from the IDE
+        // Load the current values from the IDE
         PropertiesComponent propsComp = PropertiesComponent.getInstance();
         for (Prop prop : sProps) {
-            prop.setVal(propsComp.getFloat(prop.NAME, prop.DEF));
+            prop.setVal(propsComp.getFloat(prop.property.toString(), prop.def));
         }
     }
 
@@ -65,7 +62,7 @@ public class Props {
      */
     public static void resetDefaults() {
         for (Prop prop : sProps) {
-            prop.setVal(prop.DEF);
+            prop.setVal(prop.def);
         }
 
         storeProperties();
@@ -78,11 +75,17 @@ public class Props {
         PropertiesComponent propsComp = PropertiesComponent.getInstance();
 
         for (Prop prop : sProps) {
-            propsComp.setValue(prop.NAME, String.valueOf(prop.VAL));
+            propsComp.setValue(prop.property.toString(), String.valueOf(prop.getVal()));
         }
     }
 
+    @NotNull
     public static Prop get(int id) {
-        return sProps.get(id);
+        return Props.get(SmoothScrollerProperties.values()[id]);
+    }
+
+    @NotNull
+    public static Prop get(SmoothScrollerProperties property) {
+        return sProps.get(property.ordinal());
     }
 }

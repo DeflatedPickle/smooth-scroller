@@ -1,6 +1,7 @@
 /*
  * The MIT License (MIT)
  *
+ * Copyright (c) 2020 DeflatedPickle
  * Copyright (c) 2016 Michael A Updike
  * Copyright (c) 2013 Hugo Campos
  *
@@ -24,6 +25,8 @@
 
 package com.weebly.opus1269.smoothscroller;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,10 +42,11 @@ public class OptionsForm implements ActionListener {
     private JSlider fricSlider;
     private JSlider multSlider;
     private JPanel panel;
+    @SuppressWarnings({"unused", "RedundantSuppression"})
     private JPanel itemPanel;
     private JButton resetDefaultsButton;
 
-    private final ArrayList<JSlider> mList = new ArrayList<JSlider>();
+    private final ArrayList<JSlider> mList = new ArrayList<>();
 
     public OptionsForm() {
         mList.add(thresholdSlider);
@@ -75,7 +79,7 @@ public class OptionsForm implements ActionListener {
     public boolean isModified() {
         int i = 0;
         for (JSlider slider : mList) {
-            if (slider.getValue() != getProp(i).POS) {
+            if (slider.getValue() != getProp(i).getPos()) {
                 return true;
             }
             i++;
@@ -86,13 +90,13 @@ public class OptionsForm implements ActionListener {
     public void setFromProps() {
         int i = 0;
         for (JSlider slider : mList) {
-            slider.setValue(getProp(i).POS);
+            slider.setValue(getProp(i).getPos());
             i++;
         }
     }
 
+    @NotNull
     private Prop getProp(int pos) {
         return Props.get(pos);
     }
-
 }

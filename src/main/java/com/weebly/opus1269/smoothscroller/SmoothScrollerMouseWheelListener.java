@@ -1,6 +1,7 @@
 /*
  * The MIT License (MIT)
  *
+ * Copyright (c) 2020 DeflatedPickle
  * Copyright (c) 2016 Michael A Updike
  * Copyright (c) 2013 Hugo Campos
  *
@@ -27,6 +28,7 @@ package com.weebly.opus1269.smoothscroller;
 import com.intellij.openapi.editor.ScrollingModel;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.TextEditor;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +41,7 @@ import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 
 class SmoothScrollerMouseWheelListener implements MouseWheelListener, ActionListener {
-    private static Logger LOGGER =  LoggerFactory.getLogger(SmoothScrollerMouseWheelListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SmoothScrollerMouseWheelListener.class);
 
     // The frame rate of the animation
     // TODO: Investigate if we can get an AnimationFrame
@@ -69,58 +71,56 @@ class SmoothScrollerMouseWheelListener implements MouseWheelListener, ActionList
     private final ScrollingModel mScrollingModel;
 
     // Timer to handle the animation
-    private Timer mTimer;
+    private final Timer mTimer = new Timer(MILLIS_PER_FRAME, this);
 
     // The last input from the mouse wheel event
     private double mLastWheelDelta = 0.0D;
 
-    // true when mouse wheel events are being processed
+    // 'true' when mouse wheel events are being processed
     private boolean mScrolling = false;
 
-    // True when mouse wheel events are horizontal
+    // 'true' when mouse wheel events are horizontal
     private boolean mScrollingHorizontal = false;
 
     // The current velocity of the window, usually in rows / mSec
     private double mVelocity = 0.0D;
 
     // A history of the last several scroll velocities
-    private final ArrayList<Double> mVelocities = new ArrayList<Double>();
+    private final ArrayList<Double> mVelocities = new ArrayList<>();
     private static final int MAX_VELOCITIES = 10;
 
     /**
      * Constructor for our MouseWheelListener.
      *
-     * @param editor The file editor to which smooth scrolling is to be added.
+     * @param editor The file editor to which smooth scrolling is to be added
      */
     public SmoothScrollerMouseWheelListener(FileEditor editor) {
-        mScrollingModel = ((TextEditor) editor).getEditor().getScrollingModel();
-        // we will do the animation
-        mScrollingModel.disableAnimation();
-
-        mTimer = new Timer(MILLIS_PER_FRAME, this);
+        this.mScrollingModel = ((TextEditor) editor).getEditor().getScrollingModel();
+        // We will do the animation
+        this.mScrollingModel.disableAnimation();
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        final double spdTol = Props.get(Props.TOL).VAL;
-        final double spdLmt = Props.get(Props.SPD).VAL;
-        final double accLmt = Props.get(Props.ACC).VAL;
-        final double scrMut = Props.get(Props.MULT).VAL;
+        final double speedThreshold = Props.get(SmoothScrollerProperties.THRESHOLD).getVal();
+        final double speedLimit = Props.get(SmoothScrollerProperties.SPEED_LIMIT).getVal();
+        final double accelerationLimit = Props.get(SmoothScrollerProperties.ACCELERATION_LIMIT).getVal();
+        final double scrollMultiplier = Props.get(SmoothScrollerProperties.MULTIPLIER).getVal();
 
         // don't want to apply any easing to velocity while scrolling
-        mScrolling = true;
-        mScrollingHorizontal = e.getModifiersEx() != 0;
+        this.mScrolling = true;
+        this.mScrollingHorizontal = e.getModifiersEx() != 0;
 
-        mScrollingModel.runActionOnScrollingFinished(() -> {
+        this.mScrollingModel.runActionOnScrollingFinished(() -> {
             mScrolling = false;
             mVelocities.clear();
         });
 
-        // track wheel motion delta
+        // Track wheel motion delta
         // TODO: Could use a debounce probably
         final double wheelDelta = e.getPreciseWheelRotation();
-        final boolean sameDirection = mLastWheelDelta * wheelDelta > 0.0D;
-        mLastWheelDelta = wheelDelta;
+        final boolean sameDirection = this.mLastWheelDelta * wheelDelta > 0.0D;
+        this.mLastWheelDelta = wheelDelta;
 
         if (!sameDirection) {
             // changed direction
@@ -129,57 +129,57 @@ class SmoothScrollerMouseWheelListener implements MouseWheelListener, ActionList
         }
 
         // calculate new velocity increment
-        final double scrollDelta = e.getScrollAmount() * wheelDelta * scrMut;
+        final double scrollDelta = e.getScrollAmount() * wheelDelta * scrollMultiplier;
         final double deltaV = scrollDelta / MILLIS_PER_FRAME;
 
-        if (Math.abs(deltaV) < spdTol) {
+        if (Math.abs(deltaV) < speedThreshold) {
             // skip small movements
             return;
         }
 
-        final double oldVelocity = mVelocity;
-        final double newVelocity = mVelocity + deltaV;
+        final double oldVelocity = this.mVelocity;
+        final double newVelocity = this.mVelocity + deltaV;
 
         // calculate average velocity over last several mouse wheel events
-        if (mVelocities.size() == MAX_VELOCITIES) {
-            mVelocities.remove(0);
+        if (this.mVelocities.size() == MAX_VELOCITIES) {
+            this.mVelocities.remove(0);
         }
-        mVelocities.add(newVelocity);
+        this.mVelocities.add(newVelocity);
 
-        mVelocity = getAverage(mVelocities);
+        this.mVelocity = getAverage(this.mVelocities);
 
         // limit acceleration
-        final double acc = (mVelocity - oldVelocity) / MILLIS_PER_FRAME;
-        if (Math.abs(acc) > accLmt) {
-            mVelocity = oldVelocity + accLmt * MILLIS_PER_FRAME * Math.signum(acc);
+        final double acc = (this.mVelocity - oldVelocity) / MILLIS_PER_FRAME;
+        if (Math.abs(acc) > accelerationLimit) {
+            this.mVelocity = oldVelocity + accelerationLimit * MILLIS_PER_FRAME * Math.signum(acc);
         }
 
         // limit speed
-        if (Math.abs(mVelocity) > spdLmt) {
-            mVelocity = spdLmt * Math.signum(mVelocity);
+        if (Math.abs(mVelocity) > speedLimit) {
+            this.mVelocity = speedLimit * Math.signum(mVelocity);
         }
-        if (Math.abs(mVelocity) < spdTol) {
-            zeroVelocity();
+        if (Math.abs(mVelocity) < speedThreshold) {
+            this.zeroVelocity();
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        update();
+        this.update();
     }
 
     /**
      * Starts animating the scroll offset.
      */
     public void startAnimating() {
-        mTimer.start();
+        this.mTimer.start();
     }
 
     /**
      * Stops animating the scroll offset.
      */
     public void stopAnimating() {
-        mTimer.stop();
+        this.mTimer.stop();
     }
 
     /**
@@ -187,37 +187,50 @@ class SmoothScrollerMouseWheelListener implements MouseWheelListener, ActionList
      * the scroll offset.
      */
     private void update() {
-        final double spdTol = Props.get(Props.TOL).VAL;
-        final double lambda = Props.get(Props.FRIC).VAL;
+        final double speedThreshold = Props.get(SmoothScrollerProperties.THRESHOLD).getVal();
+        final double friction = Props.get(SmoothScrollerProperties.FRICTION).getVal();
 
-         if (!mScrolling) {
-            // Basic kinetic scrolling, exponential decay vel_new = vel * e^-lambda*deltaT
-            mVelocity = mVelocity * Math.exp(-lambda * MILLIS_PER_FRAME);
+        if (!mScrolling) {
+            // Basic kinetic scrolling, exponential decay vel_new = vel * e^-friction*deltaT
+            this.mVelocity = mVelocity * Math.exp(-friction * MILLIS_PER_FRAME);
         }
 
-        if (Math.abs(mVelocity) >= spdTol) {
-            // reposition cursor offset based on current velocity
-            if (mScrollingHorizontal) {
+        if (Math.abs(mVelocity) >= speedThreshold) {
+            // Reposition cursor offset based on current velocity
+            if (this.mScrollingHorizontal) {
                 final int currentOffset = mScrollingModel.getHorizontalScrollOffset();
-                final long offset = Math.round((currentOffset + mVelocity * MILLIS_PER_FRAME));
-                mScrollingModel.scrollHorizontally(Math.max(0, (int) offset));
+                final long offset = Math.round(
+                        (currentOffset + this.mVelocity * MILLIS_PER_FRAME)
+                );
+                this.mScrollingModel.scrollHorizontally(Math.max(0, (int) offset));
             } else {
                 final int currentOffset = mScrollingModel.getVerticalScrollOffset();
-                final long offset = Math.round((currentOffset + mVelocity * MILLIS_PER_FRAME));
-                mScrollingModel.scrollVertically(Math.max(0, (int) offset));
+                final long offset = Math.round(
+                        (currentOffset + this.mVelocity * MILLIS_PER_FRAME)
+                );
+                this.mScrollingModel.scrollVertically(Math.max(0, (int) offset));
             }
         } else {
-            // bring to stop below threshold
-            zeroVelocity();
+            // Bring to stop below threshold
+            this.zeroVelocity();
         }
     }
 
+    /**
+     * Sets the velocity to 0 and clears the list of previous velocities
+     */
     private void zeroVelocity() {
-        mVelocity = 0.0D;
-        mVelocities.clear();
+        this.mVelocity = 0.0D;
+        this.mVelocities.clear();
     }
 
-    private double getAverage(ArrayList<Double> array) {
+    /**
+     * Finds the average of all values in a list
+     *
+     * @param array An array of doubles
+     * @return The average of the given array
+     */
+    private double getAverage(@NotNull ArrayList<Double> array) {
         double sum = 0.0D;
         if (!array.isEmpty()) {
             for (Double item : array) {

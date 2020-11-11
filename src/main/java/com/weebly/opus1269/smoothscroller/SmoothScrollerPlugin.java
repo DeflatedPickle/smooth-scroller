@@ -1,6 +1,7 @@
 /*
  * The MIT License (MIT)
  *
+ * Copyright (c) 2020 DeflatedPickle
  * Copyright (c) 2016 Michael A Updike
  * Copyright (c) 2013 Hugo Campos
  *
@@ -24,53 +25,37 @@
 
 package com.weebly.opus1269.smoothscroller;
 
-import com.intellij.openapi.components.AbstractProjectComponent;
+import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Top level component for the plugin
- *
  */
-public class SmoothScrollerPlugin extends AbstractProjectComponent {
+public class SmoothScrollerPlugin implements ProjectComponent {
     private final Project mProject;
-    //private final Logger mLogger = Logger.getInstance(getClass());
 
     public SmoothScrollerPlugin(Project project) {
-        super(project);
-
-        mProject = project;
+        this.mProject = project;
 
         // Initialize scroll parameters
         Props.initialize();
-
     }
 
     @Override
     public void initComponent() {
-        mProject.getMessageBus()
+        this.mProject.getMessageBus()
                 .connect()
-                .subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorListener());
-
-        //mLogger.debug("SmoothScroller initialized");
-    }
-
-    @Override
-    public void disposeComponent() {
+                .subscribe(
+                        FileEditorManagerListener.FILE_EDITOR_MANAGER,
+                        new FileEditorListener()
+                );
     }
 
     @NotNull
     @Override
     public String getComponentName() {
         return "SmoothScrollerProjectComponent";
-    }
-
-    @Override
-    public void projectOpened() {
-    }
-
-    @Override
-    public void projectClosed() {
     }
 }
