@@ -38,6 +38,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
@@ -111,7 +112,8 @@ class SmoothScrollerMouseWheelListener implements MouseWheelListener, ActionList
 
         // don't want to apply any easing to velocity while scrolling
         this.mScrolling = true;
-        this.mScrollingHorizontal = e.getModifiersEx() != 0;
+        // Check if shift is held down
+        this.mScrollingHorizontal = (e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0;
 
         this.mScrollingModel.runActionOnScrollingFinished(() -> {
             mScrolling = false;
